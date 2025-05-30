@@ -6,17 +6,27 @@ applyTo: "**"
 
 ## Simple Git Workflow
 
-### 1. Add Changes
+### 1. Check Status
+```powershell
+git status
+```
+
+### 2. Review Changes (Optional)
+```powershell
+git diff
+```
+
+### 3. Add Changes
 ```powershell
 git add .
 ```
 
-### 2. Commit Changes
+### 4. Commit Changes
 ```powershell
 git commit -m "your commit message here"
 ```
 
-### 3. Push to Remote
+### 5. Push to Remote
 ```powershell
 git push
 ```
@@ -31,6 +41,12 @@ git push
 
 ### Complete Example
 ```powershell
+# Check what files have changed:
+git status
+
+# Review the changes (optional):
+git diff
+
 # Make your changes, then:
 git add .
 git commit -m "add user authentication to API"
@@ -54,8 +70,9 @@ git remote add origin https://github.com/username/repository-name.git
 
 | Command | What it does |
 |---------|-------------|
+| `git status` | Check what files have changed |
+| `git diff` | Show detailed changes in files |
 | `git add .` | Add all changes to staging |
 | `git commit -m "message"` | Commit with message |
 | `git push` | Push to remote repository |
-| `git status` | Check current status |
 | `git pull` | Get latest changes from remote |
