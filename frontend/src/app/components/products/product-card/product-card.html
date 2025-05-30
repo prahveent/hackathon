@@ -12,9 +12,10 @@
   <!-- Product Image -->
   <div class="product-image">
     <img 
-      [src]="product.mainImageUrl || '/assets/images/placeholder-product.jpg'" 
+      [src]="product.mainImageUrl || 'https://via.placeholder.com/400x400/95a5a6/ffffff?text=No+Image'" 
       [alt]="product.name"
       loading="lazy"
+      (error)="onImageError($event)"
     />
     
     <!-- Quick Actions -->

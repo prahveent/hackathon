@@ -95,6 +95,10 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/products']);
+    window.history.back();
+  }
+
+  onImageError(event: any): void {
+    event.target.src = 'https://via.placeholder.com/600x600/95a5a6/ffffff?text=Image+Not+Found';
   }
 }

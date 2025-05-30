@@ -57,4 +57,8 @@ export class ProductCardComponent {
     // TODO: Implement wishlist functionality
     console.log('Add to wishlist:', this.product.id);
   }
+
+  onImageError(event: any): void {
+    event.target.src = 'https://via.placeholder.com/400x400/95a5a6/ffffff?text=Image+Not+Found';
+  }
 }
