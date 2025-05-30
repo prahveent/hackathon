@@ -11,6 +11,12 @@ import { User, UserRole } from '../models/auth.model';
   standalone: true,
   imports: [CommonModule, ProductListComponent, CategoryNavComponent],  template: `
     <div class="products-page">
+      <div class="navigation-header">
+        <button class="back-btn" (click)="goBack()">
+          <span>←</span> Back to Dashboard
+        </button>
+      </div>
+      
       <div class="page-header">
         <h1>Products</h1>
         <p>Discover our wide range of products</p>
@@ -42,12 +48,40 @@ import { User, UserRole } from '../models/auth.model';
         </main>
       </div>
     </div>
-  `,
-  styles: [`
+  `,  styles: [`
     .products-page {
       max-width: 1200px;
       margin: 0 auto;
       padding: 1rem;
+    }
+
+    .navigation-header {
+      margin-bottom: 1rem;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      color: #495057;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .back-btn:hover {
+      background: #e9ecef;
+      border-color: #adb5bd;
+      color: #212529;
+    }
+
+    .back-btn span {
+      font-size: 1.1rem;
     }
 
     .page-header {
@@ -213,12 +247,19 @@ export class ProductsPageComponent implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {}
-
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.isAdmin = user?.role === UserRole.Administrator;
     });
+  }
+
+  goBack(): void {
+    if (this.isAdmin) {
+      this.router.navigate(['/admin-dashboard']);
+    } else {
+      this.router.navigate(['/customer-dashboard']);
+    }
   }
 
   addNewProduct(): void {
