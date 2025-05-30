@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=hackathon_db
+      - POSTGRES_USER=hackathon_user
+      - POSTGRES_PASSWORD=hackathon_password
+
+  api:
+    build:
+      context: ./backend/HackathonApi
+      dockerfile: Dockerfile
+      target: build
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=hackathon_db;Username=hackathon_user;Password=hackathon_password
+    volumes:
+      - ./backend/HackathonApi:/src
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+    stdin_open: true
+    tty: true

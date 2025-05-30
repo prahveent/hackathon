@@ -1,11 +1,33 @@
 # Hackathon Project
 
-A full-stack application with .NET 9 Web API backend and frontend components.
+A full-stack application with .NET 9 Web API backend, PostgreSQL database, and frontend components.
 
 ## 🚀 Quick Start
 
+### Option 1: Docker (Recommended)
+
+1. **Prerequisites**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+2. **Start all services**:
+   ```powershell
+   .\scripts\start-services.ps1
+   ```
+
+3. **Access the application**:
+   - API: http://localhost:5000
+   - Database Admin: http://localhost:5050  
+   - API Health Check: http://localhost:5000/health/db
+
+4. **Stop services**:
+   ```powershell
+   .\scripts\stop-services.ps1
+   ```
+
+### Option 2: Local Development
+
 ### Prerequisites
 - .NET 9 SDK
+- PostgreSQL (version 12 or higher)
 - Git
 
 ### Getting Started
@@ -16,7 +38,22 @@ A full-stack application with .NET 9 Web API backend and frontend components.
    cd hackathon
    ```
 
-2. **Run the Backend API:**
+2. **Set up the Database:**
+   ```sql
+   -- Connect to PostgreSQL as postgres user
+   CREATE DATABASE hackathon_db;
+   CREATE USER hackathon_user WITH PASSWORD 'hackathon_password';
+   GRANT ALL PRIVILEGES ON DATABASE hackathon_db TO hackathon_user;
+   ```
+
+3. **Run Database Migrations:**
+   ```bash
+   cd backend/HackathonApi
+   dotnet tool install --global dotnet-ef
+   dotnet ef database update
+   ```
+
+4. **Run the Backend API:**
    ```bash
    cd backend
    dotnet run --project HackathonApi
@@ -24,7 +61,7 @@ A full-stack application with .NET 9 Web API backend and frontend components.
    
    The API will be available at `https://localhost:5001`
 
-3. **Frontend Setup:**
+5. **Frontend Setup:**
    ```bash
    cd frontend
    # Frontend setup instructions will be added here
@@ -50,7 +87,8 @@ hackathon/
 ### Backend (.NET 9 Web API)
 - **Location:** `backend/HackathonApi/`
 - **Framework:** .NET 9
-- **Features:** OpenAPI/Swagger, Controllers, Health checks
+- **Database:** PostgreSQL with Entity Framework Core
+- **Features:** OpenAPI/Swagger, Controllers, Health checks, User/Team management
 - **Documentation:** See `backend/README.md` for detailed setup
 
 ### Frontend
@@ -83,7 +121,9 @@ cd backend && dotnet test
 Once running, the API provides:
 
 - **Health Check:** `GET /` - Returns "Hackathon API is running!"
-- **API Health:** `GET /api/api/health` - Returns JSON health status
+- **Database Health:** `GET /health/db` - Database connectivity check
+- **Users API:** `GET/POST /api/users` - User management
+- **Teams API:** `GET/POST /api/teams` - Team management  
 - **OpenAPI Docs:** `GET /openapi` - API documentation (development only)
 
 ## 📝 Notes
