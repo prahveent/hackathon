@@ -1,11 +1,51 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using HackathonApi.Data;
+using HackathonApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add PostgreSQL database context
 builder.Services.AddDbContext<HackathonDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+
+// Configure JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(
+            builder.Configuration["JWT:Secret"] ?? throw new InvalidOperationException("JWT:Secret not configured"))),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// Configure Authorization Policies
+builder.Services.AddAuthorization(options => 
+{
+    // Add authorization policies
+    AuthorizationPolicyService.AddAuthorizationPolicies(options);
+});
+
+// Register services
+builder.Services.AddScoped<AuthService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -40,6 +80,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

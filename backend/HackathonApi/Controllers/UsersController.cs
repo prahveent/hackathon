@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using HackathonApi.Data;
 using HackathonApi.Models;
+using HackathonApi.Attributes;
 
 namespace HackathonApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // Require authentication for all endpoints in this controller
 public class UsersController : ControllerBase
 {
     private readonly HackathonDbContext _context;
@@ -14,9 +17,8 @@ public class UsersController : ControllerBase
     public UsersController(HackathonDbContext context)
     {
         _context = context;
-    }
-
-    [HttpGet]
+    }    [HttpGet]
+    [AuthorizeRoles(UserRole.Administrator)] // Only administrators can list all users
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
         return await _context.Users.ToListAsync();
