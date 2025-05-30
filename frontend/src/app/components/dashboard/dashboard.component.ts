@@ -35,7 +35,7 @@ import { UserInfoResponse } from '../../models/auth.models';
               </div>
               <div class="info-item" *ngIf="user.customerProfile?.phone">
                 <label>Phone:</label>
-                <span>{{ user.customerProfile.phone }}</span>
+                <span>{{ user.customerProfile?.phone }}</span>
               </div>
               <div class="info-item">
                 <label>Email Verified:</label>

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -29,25 +30,30 @@ export class AuthService {
 
   public authState$ = this.authStateSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
     this.initializeAuth();
   }
 
   private initializeAuth(): void {
-    const token = localStorage.getItem('auth_token');
-    const user = localStorage.getItem('user_info');
-    
-    if (token && user) {
-      try {
-        const userInfo = JSON.parse(user);
-        this.authStateSubject.next({
-          isAuthenticated: true,
-          user: userInfo,
-          token: token,
-          loading: false
-        });
-      } catch (error) {
-        this.clearAuthData();
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('auth_token');
+      const user = localStorage.getItem('user_info');
+      
+      if (token && user) {
+        try {
+          const userInfo = JSON.parse(user);
+          this.authStateSubject.next({
+            isAuthenticated: true,
+            user: userInfo,
+            token: token,
+            loading: false
+          });
+        } catch (error) {
+          this.clearAuthData();
+        }
       }
     }
   }
@@ -76,8 +82,10 @@ export class AuthService {
   }
 
   private setAuthData(loginResponse: LoginResponse): void {
-    localStorage.setItem('auth_token', loginResponse.token);
-    localStorage.setItem('user_info', JSON.stringify(loginResponse.user));
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('auth_token', loginResponse.token);
+      localStorage.setItem('user_info', JSON.stringify(loginResponse.user));
+    }
     
     this.authStateSubject.next({
       isAuthenticated: true,
@@ -88,8 +96,10 @@ export class AuthService {
   }
 
   private clearAuthData(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_info');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_info');
+    }
     
     this.authStateSubject.next({
       isAuthenticated: false,
