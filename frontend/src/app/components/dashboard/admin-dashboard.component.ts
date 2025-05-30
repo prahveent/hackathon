@@ -471,10 +471,8 @@ export class AdminDashboardComponent implements OnInit {
   navigateToUserManagement(): void {
     this.router.navigate(['/admin/users']);
   }
-
   navigateToProductManagement(): void {
-    // TODO: Navigate to product management when implemented
-    console.log('Navigate to product management');
+    this.router.navigate(['/products']);
   }
 
   navigateToAnalytics(): void {
