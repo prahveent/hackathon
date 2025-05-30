@@ -59,6 +59,6 @@ export class ProductCardComponent {
   }
 
   onImageError(event: any): void {
-    event.target.src = 'https://via.placeholder.com/400x400/95a5a6/ffffff?text=Image+Not+Found';
+    event.target.src = 'https://picsum.photos/400/400?random=998';
   }
 }

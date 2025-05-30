@@ -9,7 +9,7 @@
   <div class="product-detail">
     <div class="product-images">
       <img 
-        [src]="(product.productImages && product.productImages[selectedImageIndex]) ? product.productImages[selectedImageIndex].imageUrl : (product.mainImageUrl || 'https://via.placeholder.com/600x600/95a5a6/ffffff?text=No+Image')" 
+        [src]="(product.productImages && product.productImages[selectedImageIndex]) ? product.productImages[selectedImageIndex].imageUrl : (product.mainImageUrl || 'https://picsum.photos/600/600?random=999')" 
         [alt]="product.name"
         (error)="onImageError($event)"
       />

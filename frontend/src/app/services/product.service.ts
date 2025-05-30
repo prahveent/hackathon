@@ -54,11 +54,11 @@ export class ProductService {
       price: 99.99, originalPrice: 129.99, sku: 'WHD-001', stockQuantity: 25, status: 'Active',
       rating: 4.5, reviewCount: 128, viewCount: 1250, isOnSale: true, discountPercentage: 23, isInStock: true, isLowStock: false, isFeatured: true,
       createdAt: new Date('2024-01-15'), updatedAt: new Date('2024-01-20'),
-      mainImageUrl: 'https://via.placeholder.com/400x400/2c3e50/ffffff?text=Wireless+Headphones',
+      mainImageUrl: 'https://picsum.photos/400/400?random=1',
       category: { id: 1, name: 'Electronics', description: 'Latest electronic gadgets and devices', isActive: true, displayOrder: 1, productCount: 25 },
       brand: { id: 1, name: 'TechnoCore', description: 'Premium technology products', isActive: true, productCount: 18 },
       productImages: [
-        { id: 1, imageUrl: 'https://via.placeholder.com/400x400/2c3e50/ffffff?text=Wireless+Headphones', altText: 'Wireless Headphones', displayOrder: 1, isMain: true }
+        { id: 1, imageUrl: 'https://picsum.photos/400/400?random=1', altText: 'Wireless Headphones', displayOrder: 1, isMain: true }
       ],
       productAttributes: [
         { id: 1, name: 'Battery Life', value: '30 hours', displayOrder: 1 },
@@ -71,11 +71,11 @@ export class ProductService {
       price: 24.99, originalPrice: 24.99, sku: 'CTS-002', stockQuantity: 50, status: 'Active',
       rating: 4.2, reviewCount: 89, viewCount: 890, isOnSale: false, isInStock: true, isLowStock: false, isFeatured: false,
       createdAt: new Date('2024-01-10'), updatedAt: new Date('2024-01-15'),
-      mainImageUrl: 'https://via.placeholder.com/400x400/3498db/ffffff?text=Cotton+T-Shirt',
+      mainImageUrl: 'https://picsum.photos/400/400?random=2',
       category: { id: 2, name: 'Clothing', description: 'Fashion and apparel for all ages', isActive: true, displayOrder: 2, productCount: 30 },
       brand: { id: 2, name: 'StyleHub', description: 'Modern fashion and lifestyle', isActive: true, productCount: 22 },
       productImages: [
-        { id: 2, imageUrl: 'https://via.placeholder.com/400x400/3498db/ffffff?text=Cotton+T-Shirt', altText: 'Cotton T-Shirt', displayOrder: 1, isMain: true }
+        { id: 2, imageUrl: 'https://picsum.photos/400/400?random=2', altText: 'Cotton T-Shirt', displayOrder: 1, isMain: true }
       ],
       productAttributes: [
         { id: 3, name: 'Material', value: '100% Cotton', displayOrder: 1 },
@@ -88,11 +88,11 @@ export class ProductService {
       price: 199.99, originalPrice: 249.99, sku: 'SGS-003', stockQuantity: 8, status: 'Active',
       rating: 4.7, reviewCount: 156, viewCount: 2100, isOnSale: true, discountPercentage: 20, isInStock: true, isLowStock: true, isFeatured: true,
       createdAt: new Date('2024-01-05'), updatedAt: new Date('2024-01-18'),
-      mainImageUrl: 'https://via.placeholder.com/400x400/27ae60/ffffff?text=Smart+Garden+System',
+      mainImageUrl: 'https://picsum.photos/400/400?random=3',
       category: { id: 3, name: 'Home & Garden', description: 'Home improvement and gardening supplies', isActive: true, displayOrder: 3, productCount: 20 },
       brand: { id: 3, name: 'HomeComfort', description: 'Quality home and garden products', isActive: true, productCount: 16 },
       productImages: [
-        { id: 3, imageUrl: 'https://via.placeholder.com/400x400/27ae60/ffffff?text=Smart+Garden+System', altText: 'Smart Garden System', displayOrder: 1, isMain: true }
+        { id: 3, imageUrl: 'https://picsum.photos/400/400?random=3', altText: 'Smart Garden System', displayOrder: 1, isMain: true }
       ],
       productAttributes: [
         { id: 5, name: 'Capacity', value: '12 plants', displayOrder: 1 },
@@ -105,11 +105,11 @@ export class ProductService {
       price: 89.99, originalPrice: 89.99, sku: 'RS-004', stockQuantity: 35, status: 'Active',
       rating: 4.4, reviewCount: 203, viewCount: 1850, isOnSale: false, isInStock: true, isLowStock: false, isFeatured: false,
       createdAt: new Date('2024-01-12'), updatedAt: new Date('2024-01-17'),
-      mainImageUrl: 'https://via.placeholder.com/400x400/e74c3c/ffffff?text=Running+Shoes',
+      mainImageUrl: 'https://picsum.photos/400/400?random=4',
       category: { id: 4, name: 'Sports & Outdoor', description: 'Sports equipment and outdoor gear', isActive: true, displayOrder: 4, productCount: 15 },
       brand: { id: 4, name: 'ActiveLife', description: 'Sports and outdoor equipment', isActive: true, productCount: 14 },
       productImages: [
-        { id: 4, imageUrl: 'https://via.placeholder.com/400x400/e74c3c/ffffff?text=Running+Shoes', altText: 'Running Shoes', displayOrder: 1, isMain: true }
+        { id: 4, imageUrl: 'https://picsum.photos/400/400?random=4', altText: 'Running Shoes', displayOrder: 1, isMain: true }
       ],
       productAttributes: [
         { id: 7, name: 'Weight', value: '8.5 oz', displayOrder: 1 },
@@ -122,11 +122,11 @@ export class ProductService {
       price: 39.99, originalPrice: 49.99, sku: 'PC-005', stockQuantity: 20, status: 'Active',
       rating: 4.6, reviewCount: 94, viewCount: 750, isOnSale: true, discountPercentage: 20, isInStock: true, isLowStock: false, isFeatured: true,
       createdAt: new Date('2024-01-08'), updatedAt: new Date('2024-01-16'),
-      mainImageUrl: 'https://via.placeholder.com/400x400/9b59b6/ffffff?text=Programming+Book',
+      mainImageUrl: 'https://picsum.photos/400/400?random=5',
       category: { id: 5, name: 'Books', description: 'Books, magazines, and literature', isActive: true, displayOrder: 5, productCount: 12 },
       brand: { id: 5, name: 'BookWorld', description: 'Wide selection of books and media', isActive: true, productCount: 12 },
       productImages: [
-        { id: 5, imageUrl: 'https://via.placeholder.com/400x400/9b59b6/ffffff?text=Programming+Book', altText: 'Programming Cookbook', displayOrder: 1, isMain: true }
+        { id: 5, imageUrl: 'https://picsum.photos/400/400?random=5', altText: 'Programming Cookbook', displayOrder: 1, isMain: true }
       ],
       productAttributes: [
         { id: 9, name: 'Pages', value: '486', displayOrder: 1 },
@@ -139,11 +139,11 @@ export class ProductService {
       price: 19.99, originalPrice: 29.99, sku: 'SC-006', stockQuantity: 45, status: 'Active',
       rating: 4.1, reviewCount: 67, viewCount: 580, isOnSale: true, discountPercentage: 33, isInStock: true, isLowStock: false, isFeatured: false,
       createdAt: new Date('2024-01-14'), updatedAt: new Date('2024-01-19'),
-      mainImageUrl: 'https://via.placeholder.com/400x400/34495e/ffffff?text=Phone+Case',
+      mainImageUrl: 'https://picsum.photos/400/400?random=6',
       category: { id: 1, name: 'Electronics', description: 'Latest electronic gadgets and devices', isActive: true, displayOrder: 1, productCount: 25 },
       brand: { id: 1, name: 'TechnoCore', description: 'Premium technology products', isActive: true, productCount: 18 },
       productImages: [
-        { id: 6, imageUrl: 'https://via.placeholder.com/400x400/34495e/ffffff?text=Phone+Case', altText: 'Smartphone Case', displayOrder: 1, isMain: true }
+        { id: 6, imageUrl: 'https://picsum.photos/400/400?random=6', altText: 'Smartphone Case', displayOrder: 1, isMain: true }
       ],
       productAttributes: [
         { id: 11, name: 'Material', value: 'TPU + PC', displayOrder: 1 },
