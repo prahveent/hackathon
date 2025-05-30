@@ -15,6 +15,7 @@ builder.Services.AddDbContext<HackathonDbContext>(options =>
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<DatabaseSeeder>();
 
 // Add JWT Authentication
@@ -98,10 +99,17 @@ app.MapGet("/health/db", async (HackathonDbContext context) =>
     try
     {
         var userCount = await context.Users.CountAsync();
+        var productCount = await context.Products.CountAsync();
+        var categoryCount = await context.Categories.CountAsync();
+        var brandCount = await context.Brands.CountAsync();
+        
         return Results.Ok(new { 
             status = "healthy", 
             database = "in-memory", 
             userCount = userCount,
+            productCount = productCount,
+            categoryCount = categoryCount,
+            brandCount = brandCount,
             message = "Mock database is running successfully"
         });
     }

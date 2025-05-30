@@ -1,0 +1,97 @@
+<div class="product-card" (click)="viewProduct()">
+  <!-- Sale Badge -->
+  <div class="sale-badge" *ngIf="product.isOnSale">
+    <span>-{{ product.discountPercentage }}%</span>
+  </div>
+
+  <!-- Featured Badge -->
+  <div class="featured-badge" *ngIf="product.isFeatured">
+    <span>★ Featured</span>
+  </div>
+
+  <!-- Product Image -->
+  <div class="product-image">
+    <img 
+      [src]="product.mainImageUrl || '/assets/images/placeholder-product.jpg'" 
+      [alt]="product.name"
+      loading="lazy"
+    />
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button 
+        class="action-btn wishlist-btn" 
+        (click)="addToWishlist(); $event.stopPropagation()"
+        title="Add to Wishlist"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Info -->
+  <div class="product-info">
+    <!-- Category & Brand -->
+    <div class="product-meta" *ngIf="showCategory || showBrand">
+      <span class="category" *ngIf="showCategory">{{ product.category.name }}</span>
+      <span class="brand" *ngIf="showBrand && product.brand">{{ product.brand.name }}</span>
+    </div>
+
+    <!-- Product Name -->
+    <h3 class="product-name">{{ product.name }}</h3>
+
+    <!-- Product Description -->
+    <p class="product-description" *ngIf="product.description">
+      {{ product.description }}
+    </p>
+
+    <!-- Rating -->
+    <div class="rating-section">
+      <div class="stars">
+        <span 
+          *ngFor="let star of getStarRating()" 
+          class="star" 
+          [class.star-full]="star === 'full'"
+          [class.star-half]="star === 'half'"
+          [class.star-empty]="star === 'empty'"
+        >
+          ★
+        </span>
+      </div>
+      <span class="rating-text">{{ product.rating }} ({{ product.reviewCount }} reviews)</span>
+    </div>
+
+    <!-- Pricing -->
+    <div class="pricing-section">
+      <div class="price-row">
+        <span class="current-price">{{ formatPrice(product.price) }}</span>
+        <span class="original-price" *ngIf="product.originalPrice">
+          {{ formatPrice(product.originalPrice) }}
+        </span>
+      </div>
+      <div class="savings" *ngIf="product.isOnSale">
+        You save {{ formatPrice(calculateSavings()) }}
+      </div>
+    </div>
+
+    <!-- Stock Status -->
+    <div class="stock-status" [class]="getStockStatusClass()">
+      <span>{{ getStockStatusText() }}</span>
+    </div>
+
+    <!-- Add to Cart Button -->
+    <button 
+      class="add-to-cart-btn" 
+      [disabled]="!product.isInStock"
+      (click)="addToCart(); $event.stopPropagation()"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H19M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z"/>
+      </svg>
+      <span *ngIf="product.isInStock; else outOfStockText">Add to Cart</span>
+      <ng-template #outOfStockText>Out of Stock</ng-template>
+    </button>
+  </div>
+</div>

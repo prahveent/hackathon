@@ -18,6 +18,13 @@ public class HackathonDbContext : DbContext
     public DbSet<AdminProfile> AdminProfiles { get; set; }
     public DbSet<UserSession> UserSessions { get; set; }
     public DbSet<PasswordReset> PasswordResets { get; set; }
+    
+    // Product-related DbSets
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Brand> Brands { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
+    public DbSet<ProductAttribute> ProductAttributes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -117,6 +124,64 @@ public class HackathonDbContext : DbContext
         {
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+        
+        // Configure Category entity
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+        
+        // Configure Brand entity
+        modelBuilder.Entity<Brand>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+        
+        // Configure Product entity
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasIndex(e => e.SKU).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.Status)
+                  .HasConversion<string>();
+                  
+            entity.HasOne(p => p.Category)
+                  .WithMany(c => c.Products)
+                  .HasForeignKey(p => p.CategoryId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(p => p.Brand)
+                  .WithMany(b => b.Products)
+                  .HasForeignKey(p => p.BrandId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+        
+        // Configure ProductImage entity
+        modelBuilder.Entity<ProductImage>(entity =>
+        {
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(pi => pi.Product)
+                  .WithMany(p => p.ProductImages)
+                  .HasForeignKey(pi => pi.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Configure ProductAttribute entity
+        modelBuilder.Entity<ProductAttribute>(entity =>
+        {
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(pa => pa.Product)
+                  .WithMany(p => p.ProductAttributes)
+                  .HasForeignKey(pa => pa.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
         
         // Seed default roles

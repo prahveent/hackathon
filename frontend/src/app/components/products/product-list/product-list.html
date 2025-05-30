@@ -1,0 +1,230 @@
+<div class="product-list-container">
+  <!-- Navigation Header -->
+  <div class="nav-header">
+    <div class="nav-content">
+      <h1>SmartCart</h1>
+      <div class="nav-links">
+        <button class="nav-btn" (click)="goToDashboard()">Dashboard</button>
+        <button class="nav-btn" (click)="goToLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <app-product-search
+    [categories]="categories"
+    [brands]="brands"
+    [currentRequest]="currentRequest"
+    [minPrice]="searchResponse?.minPrice"
+    [maxPrice]="searchResponse?.maxPrice"
+    (filtersChanged)="onFiltersChanged($event)"
+    (sortChanged)="onSortChanged($event)"
+    (clearFilters)="clearFilters()"
+  ></app-product-search>
+
+  <!-- Results Header -->
+  <div class="results-header" *ngIf="searchResponse">
+    <div class="results-info">
+      <h2 class="results-title">Products</h2>
+      <p class="results-count">
+        Showing {{ (searchResponse.currentPage - 1) * searchResponse.pageSize + 1 }}-{{ 
+          Math.min(searchResponse.currentPage * searchResponse.pageSize, searchResponse.totalCount) 
+        }} of {{ searchResponse.totalCount }} products
+      </p>
+    </div>
+
+    <div class="view-controls">
+      <!-- View Mode Toggle -->
+      <div class="view-mode-toggle">
+        <button 
+          class="view-btn"
+          [class.active]="viewMode === 'grid'"
+          (click)="onViewModeChanged('grid')"
+          title="Grid View"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+          </svg>
+        </button>
+        <button 
+          class="view-btn"
+          [class.active]="viewMode === 'list'"
+          (click)="onViewModeChanged('list')"
+          title="List View"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Grid Columns Control -->
+      <div class="grid-controls" *ngIf="viewMode === 'grid'">
+        <select 
+          [(ngModel)]="gridColumns" 
+          (change)="onGridColumnsChanged(gridColumns)"
+          class="columns-select"
+        >
+          <option value="2">2 Columns</option>
+          <option value="3">3 Columns</option>
+          <option value="4">4 Columns</option>
+          <option value="5">5 Columns</option>
+        </select>
+      </div>
+
+      <!-- Page Size Control -->
+      <div class="page-size-control">
+        <select 
+          #pageSizeSelect
+          [value]="currentRequest.pageSize" 
+          (change)="onPageSizeChanged(+pageSizeSelect.value)"
+          class="page-size-select"
+        >
+          <option value="12">12 per page</option>
+          <option value="24">24 per page</option>
+          <option value="48">48 per page</option>
+          <option value="96">96 per page</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading products...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error && !loading">
+    <div class="error-message">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+      <h3>{{ error }}</h3>
+      <button class="retry-btn" (click)="searchProducts()">Try Again</button>
+    </div>
+  </div>
+
+  <!-- Products Grid/List -->
+  <div class="products-container" *ngIf="!loading && !error">
+    <!-- No Results -->
+    <div class="no-results" *ngIf="products.length === 0">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <h3>No products found</h3>
+      <p>Try adjusting your search criteria or filters</p>
+      <button class="clear-filters-btn" (click)="clearFilters()">Clear All Filters</button>
+    </div>
+
+    <!-- Products Grid -->
+    <div 
+      class="products-grid" 
+      [class]="getGridClass()"
+      [class.list-view]="viewMode === 'list'"
+      *ngIf="products.length > 0"
+    >
+      <app-product-card
+        *ngFor="let product of products; trackBy: trackByProductId"
+        [product]="product"
+        [showCategory]="!currentRequest.categoryId"
+        [showBrand]="!currentRequest.brandId"
+      ></app-product-card>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="searchResponse && searchResponse.totalPages > 1">
+      <nav class="pagination">
+        <!-- Previous Button -->
+        <button 
+          class="page-btn prev-btn"
+          [disabled]="!searchResponse.hasPreviousPage"
+          (click)="onPageChanged(searchResponse.currentPage - 1)"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Previous
+        </button>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          <!-- First Page -->
+          <button 
+            *ngIf="getPaginationPages()[0] > 1"
+            class="page-btn"
+            (click)="onPageChanged(1)"
+          >
+            1
+          </button>
+          
+          <!-- Ellipsis -->
+          <span 
+            *ngIf="getPaginationPages()[0] > 2"
+            class="page-ellipsis"
+          >
+            ...
+          </span>
+
+          <!-- Visible Pages -->
+          <button 
+            *ngFor="let page of getPaginationPages()"
+            class="page-btn"
+            [class.active]="page === searchResponse.currentPage"
+            (click)="onPageChanged(page)"
+          >
+            {{ page }}
+          </button>
+
+          <!-- Ellipsis -->
+          <span 
+            *ngIf="getPaginationPages()[getPaginationPages().length - 1] < searchResponse.totalPages - 1"
+            class="page-ellipsis"
+          >
+            ...
+          </span>
+
+          <!-- Last Page -->
+          <button 
+            *ngIf="getPaginationPages()[getPaginationPages().length - 1] < searchResponse.totalPages"
+            class="page-btn"
+            (click)="onPageChanged(searchResponse.totalPages)"
+          >
+            {{ searchResponse.totalPages }}
+          </button>
+        </div>
+
+        <!-- Next Button -->
+        <button 
+          class="page-btn next-btn"
+          [disabled]="!searchResponse.hasNextPage"
+          (click)="onPageChanged(searchResponse.currentPage + 1)"
+        >
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </nav>
+
+      <!-- Pagination Info -->
+      <div class="pagination-info">
+        Page {{ searchResponse.currentPage }} of {{ searchResponse.totalPages }}
+      </div>
+    </div>
+  </div>
+</div>

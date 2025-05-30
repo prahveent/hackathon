@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserInfoResponse } from '../../models/auth.models';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="dashboard-container">
       <header class="header">
@@ -53,7 +53,7 @@ import { UserInfoResponse } from '../../models/auth.models';
           <div class="actions-card">
             <h2>Quick Actions</h2>
             <div class="action-buttons">
-              <button class="action-btn primary">
+              <button class="action-btn primary" (click)="browseProducts()">
                 <span class="icon">🛍️</span>
                 Browse Products
               </button>
@@ -324,6 +324,14 @@ export class DashboardComponent implements OnInit {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  }
+
+  browseProducts(): void {
+    console.log('Navigating to products...');
+    this.router.navigate(['/products']).then(
+      success => console.log('Navigation success:', success),
+      error => console.error('Navigation error:', error)
+    );
   }
 
   changePassword(): void {

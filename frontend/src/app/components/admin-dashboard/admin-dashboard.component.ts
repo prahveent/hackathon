@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserInfoResponse } from '../../models/auth.models';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="admin-dashboard-container">
       <header class="header">
@@ -62,7 +62,7 @@ import { UserInfoResponse } from '../../models/auth.models';
                 <span class="icon">👥</span>
                 User Management
               </button>
-              <button class="action-btn secondary">
+              <button class="action-btn secondary" (click)="navigateToProducts()">
                 <span class="icon">📦</span>
                 Product Management
               </button>
@@ -456,5 +456,9 @@ export class AdminDashboardComponent implements OnInit {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  navigateToProducts(): void {
+    this.router.navigate(['/products']);
   }
 } 

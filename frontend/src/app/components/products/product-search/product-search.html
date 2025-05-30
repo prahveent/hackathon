@@ -1,0 +1,214 @@
+<div class="product-search">
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <div class="search-input-group">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="filters.query"
+        (input)="onSearchInput()"
+        placeholder="Search products..."
+        class="search-input"
+      />
+      <button 
+        *ngIf="filters.query" 
+        (click)="filters.query = ''; onSearchInput()"
+        class="clear-search-btn"
+        type="button"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Filters & Sort -->
+  <div class="filter-controls">
+    <div class="quick-filters">
+      <!-- Category Filter -->
+      <select 
+        [(ngModel)]="filters.categoryId" 
+        (change)="onFilterChange()"
+        class="filter-select"
+      >
+        <option [value]="undefined">All Categories</option>
+        <option 
+          *ngFor="let category of categories" 
+          [value]="category.id"
+        >
+          {{ category.name }} ({{ category.productCount }})
+        </option>
+      </select>
+
+      <!-- Brand Filter -->
+      <select 
+        [(ngModel)]="filters.brandId" 
+        (change)="onFilterChange()"
+        class="filter-select"
+      >
+        <option [value]="undefined">All Brands</option>
+        <option 
+          *ngFor="let brand of brands" 
+          [value]="brand.id"
+        >
+          {{ brand.name }} ({{ brand.productCount }})
+        </option>
+      </select>
+
+      <!-- Quick Toggle Filters -->
+      <div class="toggle-filters">
+        <label class="toggle-filter">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filters.onSale" 
+            (change)="onFilterChange()"
+          />
+          <span class="checkmark"></span>
+          On Sale
+        </label>
+
+        <label class="toggle-filter">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filters.inStock" 
+            (change)="onFilterChange()"
+          />
+          <span class="checkmark"></span>
+          In Stock
+        </label>
+
+        <label class="toggle-filter">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filters.featured" 
+            (change)="onFilterChange()"
+          />
+          <span class="checkmark"></span>
+          Featured
+        </label>
+      </div>
+    </div>
+
+    <!-- Sort Control -->
+    <div class="sort-control">
+      <select 
+        [(ngModel)]="filters.sortBy" 
+        (change)="onSortChange()"
+        class="sort-select"
+      >
+        <option 
+          *ngFor="let option of getSortOptions()" 
+          [value]="option.value"
+        >
+          Sort by {{ option.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Advanced Filters Toggle -->
+  <div class="advanced-filters-section">
+    <button 
+      class="advanced-filters-toggle"
+      (click)="toggleAdvancedFilters()"
+      type="button"
+    >
+      <span>Advanced Filters</span>
+      <svg 
+        class="chevron" 
+        [class.rotated]="showAdvancedFilters"
+        width="16" 
+        height="16" 
+        viewBox="0 0 24 24" 
+        fill="none"
+      >
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    </button>
+
+    <!-- Advanced Filters Panel -->
+    <div class="advanced-filters" [class.show]="showAdvancedFilters">
+      <!-- Price Range -->
+      <div class="filter-group">
+        <label class="filter-label">Price Range</label>
+        <div class="price-range">
+          <div class="price-input-group">
+            <span class="currency">$</span>
+            <input
+              type="number"
+              [(ngModel)]="filters.minPrice"
+              (change)="onFilterChange()"
+              placeholder="Min"
+              class="price-input"
+              [min]="priceRange.min"
+              [max]="priceRange.max"
+            />
+          </div>
+          <span class="price-separator">-</span>
+          <div class="price-input-group">
+            <span class="currency">$</span>
+            <input
+              type="number"
+              [(ngModel)]="filters.maxPrice"
+              (change)="onFilterChange()"
+              placeholder="Max"
+              class="price-input"
+              [min]="priceRange.min"
+              [max]="priceRange.max"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Filters Display -->
+  <div class="active-filters" *ngIf="hasActiveFilters()">
+    <span class="active-filters-label">Active filters:</span>
+    
+    <div class="filter-tags">
+      <span class="filter-tag" *ngIf="filters.query">
+        Search: "{{ filters.query }}"
+        <button (click)="filters.query = ''; onFilterChange()" type="button">×</button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="filters.categoryId">
+        {{ getSelectedCategoryName() }}
+        <button (click)="filters.categoryId = undefined; onFilterChange()" type="button">×</button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="filters.brandId">
+        {{ getSelectedBrandName() }}
+        <button (click)="filters.brandId = undefined; onFilterChange()" type="button">×</button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="filters.onSale">
+        On Sale
+        <button (click)="filters.onSale = false; onFilterChange()" type="button">×</button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="filters.inStock">
+        In Stock
+        <button (click)="filters.inStock = false; onFilterChange()" type="button">×</button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="filters.featured">
+        Featured
+        <button (click)="filters.featured = false; onFilterChange()" type="button">×</button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="filters.minPrice || filters.maxPrice">
+        Price: ${{ filters.minPrice || 0 }} - ${{ filters.maxPrice || '∞' }}
+        <button (click)="filters.minPrice = undefined; filters.maxPrice = undefined; onFilterChange()" type="button">×</button>
+      </span>
+    </div>
+    
+    <button class="clear-all-filters" (click)="onClearFilters()" type="button">
+      Clear All
+    </button>
+  </div>
+</div>

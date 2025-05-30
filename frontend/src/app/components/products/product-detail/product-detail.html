@@ -1,0 +1,85 @@
+<div class="product-detail-container" *ngIf="!loading && !error && product">
+  <button class="back-btn" (click)="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+    Back to Products
+  </button>
+
+  <div class="product-detail">
+    <div class="product-images">
+      <img 
+        [src]="(product.productImages && product.productImages[selectedImageIndex]) ? product.productImages[selectedImageIndex].imageUrl : (product.mainImageUrl || '/assets/images/placeholder-product.jpg')" 
+        [alt]="product.name"
+      />
+      <div class="image-thumbnails" *ngIf="product.productImages && product.productImages.length > 1">
+        <img 
+          *ngFor="let image of product.productImages; let i = index"
+          [src]="image.imageUrl"
+          [alt]="image.altText || product.name"
+          [class.active]="i === selectedImageIndex"
+          (click)="selectImage(i)"
+        />
+      </div>
+    </div>
+
+    <div class="product-info">
+      <h1>{{ product.name }}</h1>
+      <p class="description">{{ product.description }}</p>
+      
+      <div class="rating">
+        <span *ngFor="let star of getStarRating()" class="star" [class]="'star-' + star">★</span>
+        <span class="rating-text">{{ product.rating }} ({{ product.reviewCount }} reviews)</span>
+      </div>
+
+      <div class="pricing">
+        <span class="current-price">{{ formatPrice(product.price) }}</span>
+        <span class="original-price" *ngIf="product.originalPrice">{{ formatPrice(product.originalPrice) }}</span>
+        <span class="savings" *ngIf="product.isOnSale">You save {{ formatPrice(calculateSavings()) }}</span>
+      </div>
+
+      <div class="stock-status" [class]="product.isInStock ? 'in-stock' : 'out-of-stock'">
+        {{ product.isInStock ? 'In Stock' : 'Out of Stock' }}
+        <span *ngIf="product.isLowStock"> (Low Stock)</span>
+      </div>
+
+      <div class="actions">
+        <button 
+          class="add-to-cart-btn" 
+          [disabled]="!product.isInStock"
+          (click)="addToCart()"
+        >
+          Add to Cart
+        </button>
+        <button class="wishlist-btn" (click)="addToWishlist()">
+          Add to Wishlist
+        </button>
+      </div>
+
+      <div class="product-details" *ngIf="product.detailedDescription">
+        <h3>Product Details</h3>
+        <p>{{ product.detailedDescription }}</p>
+      </div>
+
+      <div class="attributes" *ngIf="product.productAttributes && product.productAttributes.length > 0">
+        <h3>Specifications</h3>
+        <div class="attribute-list">
+          <div *ngFor="let attr of product.productAttributes" class="attribute-item">
+            <span class="attr-name">{{ attr.name }}:</span>
+            <span class="attr-value">{{ attr.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading product...</p>
+</div>
+
+<div class="error-container" *ngIf="error">
+  <h3>{{ error }}</h3>
+  <button (click)="goBack()">Back to Products</button>
+</div>
