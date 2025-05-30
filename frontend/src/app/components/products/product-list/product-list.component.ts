@@ -29,11 +29,9 @@ import { ProductService } from '../../../services/product.service';
           <div class="products-count" *ngIf="paginatedProducts">
             Showing {{ getDisplayRange() }} of {{ paginatedProducts.totalCount }} products
           </div>
-        </div>
-
-        <div class="products-grid" *ngIf="paginatedProducts?.items?.length">
+        </div>        <div class="products-grid" *ngIf="paginatedProducts?.items?.length">
           <div 
-            *ngFor="let product of paginatedProducts.items" 
+            *ngFor="let product of paginatedProducts?.items" 
             class="product-card"
             [routerLink]="['/products', product.id]"
           >

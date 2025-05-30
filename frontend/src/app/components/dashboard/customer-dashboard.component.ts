@@ -51,8 +51,7 @@ import { Product } from '../../models/product.model';
             <h3>Order History</h3>
             <p>Track your orders and reorder your favorite items easily.</p>
             <button class="btn btn-primary" (click)="navigateToOrders()">View Orders</button>
-          </div>
-        </div>
+          </div>        </div>
 
         <!-- Featured Products Section -->
         <div class="featured-section" *ngIf="featuredProducts.length > 0">
@@ -81,6 +80,10 @@ import { Product } from '../../models/product.model';
             <button class="btn btn-outline" (click)="navigateToProducts()">View All Products</button>
           </div>
         </div>
+
+        <div class="profile-section">
+          <div class="feature-card">
+            <div class="feature-icon">👤</div>
             <h3>Profile Settings</h3>
             <p>Manage your account information and preferences.</p>
             <button class="btn btn-primary" (click)="navigateToProfile()">Edit Profile</button>
