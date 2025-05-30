@@ -72,20 +72,19 @@ public class HackathonDbContext : DbContext
         // Seed default admin user
         SeedDefaultUsers(modelBuilder);
     }
-    
-    private void SeedDefaultUsers(ModelBuilder modelBuilder)
+      private void SeedDefaultUsers(ModelBuilder modelBuilder)
     {
         // Create default admin user
-        // Password: Admin123! (hashed)
-        var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!");
+        // Password: Tomba@123 (hashed)
+        var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Tomba@123");
         
         modelBuilder.Entity<User>().HasData(
             new User
             {
                 Id = 1,
-                Email = "admin@smartcart.com",
-                FirstName = "System",
-                LastName = "Administrator",
+                Email = "prahveent@gmail.com",
+                FirstName = "Prahveen",
+                LastName = "Tharwani",
                 PasswordHash = adminPasswordHash,
                 Role = UserRole.Administrator,
                 IsActive = true,
