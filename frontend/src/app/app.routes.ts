@@ -2,7 +2,8 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { AuthGuard, CustomerGuard } from './guards/auth.guard';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { AuthGuard, CustomerGuard, AdminGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -12,6 +13,11 @@ export const routes: Routes = [
     path: 'dashboard', 
     component: DashboardComponent, 
     canActivate: [AuthGuard, CustomerGuard] 
+  },
+  { 
+    path: 'admin', 
+    component: AdminDashboardComponent, 
+    canActivate: [AuthGuard, AdminGuard] 
   },
   // Wildcard route - should be last
   { path: '**', redirectTo: '/login' }
