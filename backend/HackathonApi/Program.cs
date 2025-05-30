@@ -71,10 +71,14 @@ if (app.Environment.IsDevelopment())
         {
             context.Database.Migrate();
             app.Logger.LogInformation("Database migrations applied successfully.");
+            
+            // Seed sample data
+            await SeedDataService.SeedProductDataAsync(context);
+            app.Logger.LogInformation("Sample data seeded successfully.");
         }
         catch (Exception ex)
         {
-            app.Logger.LogError(ex, "An error occurred while applying database migrations.");
+            app.Logger.LogError(ex, "An error occurred while applying database migrations or seeding data.");
         }
     }
 }

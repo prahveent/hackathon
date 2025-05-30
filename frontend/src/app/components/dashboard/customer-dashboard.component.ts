@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ProductService } from '../../services/product.service';
 import { User } from '../../models/auth.model';
+import { Product } from '../../models/product.model';
 
 @Component({
   selector: 'app-customer-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="dashboard-container">
       <header class="dashboard-header">
@@ -22,14 +24,19 @@ import { User } from '../../models/auth.model';
         <div class="welcome-section">
           <h2>Welcome to SmartCart</h2>
           <p>Your intelligent shopping companion is ready to help you find the best products and deals.</p>
-        </div>
-
-        <div class="features-grid">
+        </div>        <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">🛍️</div>
             <h3>Browse Products</h3>
             <p>Explore our wide range of products with intelligent recommendations.</p>
             <button class="btn btn-primary" (click)="navigateToProducts()">Start Shopping</button>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🏷️</div>
+            <h3>Categories</h3>
+            <p>Shop by category to find exactly what you're looking for.</p>
+            <button class="btn btn-primary" (click)="navigateToCategories()">Browse Categories</button>
           </div>
 
           <div class="feature-card">
@@ -45,9 +52,35 @@ import { User } from '../../models/auth.model';
             <p>Track your orders and reorder your favorite items easily.</p>
             <button class="btn btn-primary" (click)="navigateToOrders()">View Orders</button>
           </div>
+        </div>
 
-          <div class="feature-card">
-            <div class="feature-icon">👤</div>
+        <!-- Featured Products Section -->
+        <div class="featured-section" *ngIf="featuredProducts.length > 0">
+          <h3>Featured Products</h3>
+          <div class="featured-products">
+            <div 
+              *ngFor="let product of featuredProducts.slice(0, 4)"
+              class="featured-product"
+              [routerLink]="['/products', product.id]"
+            >
+              <div class="product-image">
+                <img 
+                  [src]="getMainImage(product)" 
+                  [alt]="product.name"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              <div class="product-info">
+                <h4>{{ product.name }}</h4>
+                <p class="product-price">\${{ product.price | number:'1.2-2' }}</p>
+                <p class="product-brand" *ngIf="product.brand">{{ product.brand.name }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="view-all">
+            <button class="btn btn-outline" (click)="navigateToProducts()">View All Products</button>
+          </div>
+        </div>
             <h3>Profile Settings</h3>
             <p>Manage your account information and preferences.</p>
             <button class="btn btn-primary" (click)="navigateToProfile()">Edit Profile</button>
@@ -175,9 +208,7 @@ import { User } from '../../models/auth.model';
       color: #333;
       margin-bottom: 1.5rem;
       text-align: center;
-    }
-
-    .stats-grid {
+    }    .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 1rem;
@@ -201,6 +232,80 @@ import { User } from '../../models/auth.model';
     .stat-label {
       color: #666;
       font-size: 0.9rem;
+    }
+
+    .featured-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-top: 2rem;
+    }
+
+    .featured-section h3 {
+      color: #333;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .featured-products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .featured-product {
+      background: #f8f9fa;
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .featured-product:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .product-image {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 1rem;
+    }
+
+    .product-info h4 {
+      margin: 0 0 0.5rem 0;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .product-price {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .product-brand {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .view-all {
+      text-align: center;
     }
 
     .btn {
@@ -253,15 +358,39 @@ import { User } from '../../models/auth.model';
 })
 export class CustomerDashboardComponent implements OnInit {
   currentUser: User | null = null;
+  featuredProducts: Product[] = [];
 
   constructor(
     private authService: AuthService,
+    private productService: ProductService,
     private router: Router
-  ) {}
-  ngOnInit(): void {
+  ) {}  ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
+    
+    // Load featured products
+    this.loadFeaturedProducts();
+  }
+
+  loadFeaturedProducts(): void {
+    this.productService.getFeaturedProducts().subscribe({
+      next: (products) => {
+        this.featuredProducts = products;
+      },
+      error: (error) => {
+        console.error('Error loading featured products:', error);
+      }
+    });
+  }
+
+  getMainImage(product: Product): string {
+    const mainImage = product.images?.find(img => img.isMain);
+    return mainImage?.imageUrl || 'https://via.placeholder.com/200x200?text=No+Image';
+  }
+
+  onImageError(event: any): void {
+    event.target.src = 'https://via.placeholder.com/200x200?text=No+Image';
   }
 
   logout(): void {
@@ -269,10 +398,12 @@ export class CustomerDashboardComponent implements OnInit {
       this.router.navigate(['/login']);
     });
   }
-
   navigateToProducts(): void {
-    // TODO: Navigate to products page when implemented
-    console.log('Navigate to products');
+    this.router.navigate(['/products']);
+  }
+
+  navigateToCategories(): void {
+    this.router.navigate(['/products']); // Will show categories in sidebar
   }
 
   navigateToCart(): void {
