@@ -71,12 +71,12 @@ public class HackathonDbContext : DbContext
         
         // Seed default admin user
         SeedDefaultUsers(modelBuilder);
-    }
-      private void SeedDefaultUsers(ModelBuilder modelBuilder)
+    }      private void SeedDefaultUsers(ModelBuilder modelBuilder)
     {
         // Create default admin user
-        // Password: Tomba@123 (hashed)
-        var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Tomba@123");
+        // Password: Tomba@123 (hashed with BCrypt)
+        // Using a static hash to avoid dynamic value issues in migrations
+        var adminPasswordHash = "$2a$11$8YVVdQjdoJm5vJ2a.XvXJeKLg1nJ6h4o8c3Q9mKLx7z2pFvQ6yG8O"; // Tomba@123
         
         modelBuilder.Entity<User>().HasData(
             new User
@@ -88,8 +88,8 @@ public class HackathonDbContext : DbContext
                 PasswordHash = adminPasswordHash,
                 Role = UserRole.Administrator,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         );
     }
