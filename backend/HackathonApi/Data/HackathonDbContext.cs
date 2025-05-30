@@ -11,7 +11,9 @@ public class HackathonDbContext : DbContext
 
     // DbSets for entities
     public DbSet<User> Users { get; set; }
-    public DbSet<Team> Teams { get; set; }    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public DbSet<Team> Teams { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
@@ -21,6 +23,7 @@ public class HackathonDbContext : DbContext
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.Role).HasConversion<int>();
         });
         
         // Configure Team entity
@@ -32,9 +35,9 @@ public class HackathonDbContext : DbContext
         
         // Configure relationships
         modelBuilder.Entity<User>()
-            .HasOne<Team>()
+            .HasOne(u => u.Team)
             .WithMany(t => t.Members)
-            .HasForeignKey("TeamId")
+            .HasForeignKey(u => u.TeamId)
             .IsRequired(false);
     }
 }

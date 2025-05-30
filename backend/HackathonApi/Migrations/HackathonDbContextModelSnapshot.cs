@@ -55,10 +55,8 @@ namespace HackathonApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
-                });
-
-            modelBuilder.Entity("HackathonApi.Models.User", b =>
+                    b.ToTable("Teams", (string)null);
+                });            modelBuilder.Entity("HackathonApi.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -81,10 +79,24 @@ namespace HackathonApi.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("TeamId")
                         .HasColumnType("integer");
@@ -101,14 +113,14 @@ namespace HackathonApi.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("HackathonApi.Models.User", b =>
+                    b.ToTable("Users", (string)null);
+                });            modelBuilder.Entity("HackathonApi.Models.User", b =>
                 {
-                    b.HasOne("HackathonApi.Models.Team", null)
+                    b.HasOne("HackathonApi.Models.Team", "Team")
                         .WithMany("Members")
                         .HasForeignKey("TeamId");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("HackathonApi.Models.Team", b =>
