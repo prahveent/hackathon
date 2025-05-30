@@ -1,3 +1,9 @@
+---
+mode: 'agent'
+tools: ['githubRepo', 'codebase']
+description: 'Generate documentation for code samples in the repository.'
+---
+ 
  # Doc Generation Prompt
 
  Analyze the provided code samples and update the existing Markdown documentation accordingly. If no documentation exists, generate a new one. When updating, ensure that the documentation remains concise, relevant, and structured for ease of understanding.
