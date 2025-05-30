@@ -7,14 +7,15 @@ using HackathonApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add PostgreSQL database context
+// Add In-Memory database context (Mock Database)
 builder.Services.AddDbContext<HackathonDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseInMemoryDatabase("SmartCartDb"));
 
 // Register services
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<DatabaseSeeder>();
 
 // Add JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -43,7 +44,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // React/Vite dev servers
+        policy.WithOrigins("http://localhost:4200", "http://localhost:3000", "http://localhost:5173") // Angular, React/Vite dev servers
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -56,21 +57,18 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Automatically apply pending migrations in development
-if (app.Environment.IsDevelopment())
+// Seed the in-memory database with mock data
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    try
     {
-        var context = scope.ServiceProvider.GetRequiredService<HackathonDbContext>();
-        try
-        {
-            context.Database.Migrate();
-            app.Logger.LogInformation("Database migrations applied successfully.");
-        }
-        catch (Exception ex)
-        {
-            app.Logger.LogError(ex, "An error occurred while applying database migrations.");
-        }
+        await seeder.SeedAsync();
+        app.Logger.LogInformation("Mock database seeded successfully.");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "An error occurred while seeding the mock database.");
     }
 }
 
@@ -92,15 +90,20 @@ app.UseRouting();
 app.MapControllers();
 
 // Simple health check endpoint
-app.MapGet("/", () => "SmartCart API is running!");
+app.MapGet("/", () => "SmartCart API is running with Mock Database!");
 
 // Database health check endpoint
 app.MapGet("/health/db", async (HackathonDbContext context) =>
 {
     try
     {
-        await context.Database.CanConnectAsync();
-        return Results.Ok(new { status = "healthy", database = "connected" });
+        var userCount = await context.Users.CountAsync();
+        return Results.Ok(new { 
+            status = "healthy", 
+            database = "in-memory", 
+            userCount = userCount,
+            message = "Mock database is running successfully"
+        });
     }
     catch (Exception ex)
     {
@@ -110,6 +113,46 @@ app.MapGet("/health/db", async (HackathonDbContext context) =>
             statusCode: 503
         );
     }
+});
+
+// Mock data info endpoint
+app.MapGet("/mock-data", async (HackathonDbContext context) =>
+{
+    var users = await context.Users
+        .Include(u => u.CustomerProfile)
+        .Include(u => u.AdminProfile)
+        .Include(u => u.UserRoles)
+        .ThenInclude(ur => ur.Role)
+        .Select(u => new
+        {
+            u.Id,
+            u.Email,
+            u.EmailVerified,
+            u.IsActive,
+            u.LastLogin,
+            Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
+            CustomerProfile = u.CustomerProfile != null ? new
+            {
+                u.CustomerProfile.FirstName,
+                u.CustomerProfile.LastName,
+                u.CustomerProfile.Phone
+            } : null,
+            AdminProfile = u.AdminProfile != null ? new
+            {
+                u.AdminProfile.FirstName,
+                u.AdminProfile.LastName,
+                u.AdminProfile.Department,
+                u.AdminProfile.PermissionsLevel
+            } : null
+        })
+        .ToListAsync();
+
+    return Results.Ok(new
+    {
+        message = "Mock database users",
+        totalUsers = users.Count,
+        users = users
+    });
 });
 
 app.Run();

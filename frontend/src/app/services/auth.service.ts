@@ -20,7 +20,7 @@ import {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:5001/api'; // Updated to match .NET API default HTTPS port
+  private apiUrl = 'https://localhost:7103/api'; // Updated to match actual backend port
   private authStateSubject = new BehaviorSubject<AuthState>({
     isAuthenticated: false,
     user: null,
