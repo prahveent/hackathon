@@ -11,7 +11,15 @@ public class HackathonDbContext : DbContext
 
     // DbSets for entities
     public DbSet<User> Users { get; set; }
-    public DbSet<Team> Teams { get; set; }    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<CustomerProfile> CustomerProfiles { get; set; }
+    public DbSet<AdminProfile> AdminProfiles { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
+    public DbSet<PasswordReset> PasswordResets { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
@@ -23,6 +31,87 @@ public class HackathonDbContext : DbContext
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
         
+        // Configure Role entity
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+        
+        // Configure UserRole entity
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.RoleId }).IsUnique();
+            entity.Property(e => e.AssignedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(ur => ur.User)
+                  .WithMany(u => u.UserRoles)
+                  .HasForeignKey(ur => ur.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(ur => ur.Role)
+                  .WithMany(r => r.UserRoles)
+                  .HasForeignKey(ur => ur.RoleId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(ur => ur.AssignedByUser)
+                  .WithMany()
+                  .HasForeignKey(ur => ur.AssignedBy)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+        
+        // Configure CustomerProfile entity
+        modelBuilder.Entity<CustomerProfile>(entity =>
+        {
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(cp => cp.User)
+                  .WithOne(u => u.CustomerProfile)
+                  .HasForeignKey<CustomerProfile>(cp => cp.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Configure AdminProfile entity
+        modelBuilder.Entity<AdminProfile>(entity =>
+        {
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.PermissionsLevel)
+                  .HasConversion<string>();
+            
+            entity.HasOne(ap => ap.User)
+                  .WithOne(u => u.AdminProfile)
+                  .HasForeignKey<AdminProfile>(ap => ap.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Configure UserSession entity
+        modelBuilder.Entity<UserSession>(entity =>
+        {
+            entity.HasIndex(e => e.SessionToken).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(us => us.User)
+                  .WithMany(u => u.UserSessions)
+                  .HasForeignKey(us => us.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Configure PasswordReset entity
+        modelBuilder.Entity<PasswordReset>(entity =>
+        {
+            entity.HasIndex(e => e.Token).IsUnique();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            entity.HasOne(pr => pr.User)
+                  .WithMany(u => u.PasswordResets)
+                  .HasForeignKey(pr => pr.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+        
         // Configure Team entity
         modelBuilder.Entity<Team>(entity =>
         {
@@ -30,11 +119,10 @@ public class HackathonDbContext : DbContext
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
         
-        // Configure relationships
-        modelBuilder.Entity<User>()
-            .HasOne<Team>()
-            .WithMany(t => t.Members)
-            .HasForeignKey("TeamId")
-            .IsRequired(false);
+        // Seed default roles
+        modelBuilder.Entity<Role>().HasData(
+            new Role { Id = 1, Name = "customer", Description = "Regular customer with shopping access", CreatedAt = DateTime.UtcNow },
+            new Role { Id = 2, Name = "admin", Description = "Administrator with full system access", CreatedAt = DateTime.UtcNow }
+        );
     }
 }
