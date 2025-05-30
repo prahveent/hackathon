@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProductSummary } from '../../../models/product.interfaces';
 import { ProductService } from '../../../services/product.service';
+import { CartService } from '../../../services/cart.service';
 
 @Component({
   selector: 'app-product-card',
@@ -18,7 +19,8 @@ export class ProductCardComponent {
 
   constructor(
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) {}
 
   viewProduct(): void {
@@ -49,8 +51,9 @@ export class ProductCardComponent {
   }
 
   addToCart(): void {
-    // TODO: Implement cart functionality
-    console.log('Add to cart:', this.product.id);
+    if (this.product.isInStock) {
+      this.cartService.addToCart(this.product, 1);
+    }
   }
 
   addToWishlist(): void {
@@ -60,5 +63,13 @@ export class ProductCardComponent {
 
   onImageError(event: any): void {
     event.target.src = 'https://picsum.photos/400/400?random=998';
+  }
+
+  isInCart(): boolean {
+    return this.cartService.isInCart(this.product.id);
+  }
+
+  getCartQuantity(): number {
+    return this.cartService.getProductQuantity(this.product.id);
   }
 }

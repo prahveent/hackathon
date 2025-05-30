@@ -2,9 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil, debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged, firstValueFrom, Subscription } from 'rxjs';
 
 import { ProductService } from '../../../services/product.service';
+import { CartService } from '../../../services/cart.service';
 import { ProductCardComponent } from '../product-card/product-card';
 import { ProductSearchComponent } from '../product-search/product-search';
 import {
@@ -50,8 +51,12 @@ export class ProductListComponent implements OnInit, OnDestroy {
   // Make Math available in template
   public Math = Math;
 
+  cartItemCount = 0;
+  private cartSubscription?: Subscription;
+
   constructor(
     private productService: ProductService,
+    private cartService: CartService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -60,11 +65,17 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.loadUserPreferences();
     this.loadInitialData();
     this.handleRouteParams();
+
+    // Subscribe to cart changes
+    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+      this.cartItemCount = cart.totalItems;
+    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.cartSubscription?.unsubscribe();
   }
 
   private async loadInitialData(): Promise<void> {
@@ -244,6 +255,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   public goToLogin(): void {
     this.router.navigate(['/login']);
+  }
+
+  public goToCart(): void {
+    this.router.navigate(['/cart']);
   }
 
   // Track by function for performance - make public for template access
